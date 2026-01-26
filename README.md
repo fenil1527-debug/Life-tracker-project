@@ -1,5 +1,6 @@
 # Life-tracker-project
-end term-2 project a web  which take care of you 
+end term-2 project 
+'A website  which take care of you' 
 
  Project Description
 ​LifeTrack is a fully functional Health & Wellness Tracker that I built for my Web Dev II Final Project. The goal was to create an app that helps users track their daily habits, monitor their mood, and plan their week—all without using any frameworks like React or Vue.  
