@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeTrack – Health & Wellness Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand">LifeTrack</div>
+  <div class="date-nav" id="dateDisplay"></div>
+</header>
+
+<div id="undoToast" class="toast-hidden">
+  <span id="toastText">Message</span>
+  <button id="undoBtn">UNDO</button>
+</div>
+
+<!-- heading ka title 
+ -->
+
+<section class="hero">
+  <h1>Be Gentle <span>With Yourself.</span></h1>
+  <p id="quoteText">"Today is a fresh canvas. What will you nurture?"</p>
+  <p id="quoteAuthor"></p>
+</section>
+
+<main class="layout">
+  <div class="card">
+    <div class="card-header">
+      <h2>Daily Flow</h2>
+      <p class="text-muted">Today's habits and progress</p>
+    </div>
+
+    <!-- // mood swings  -->
+
+
+    <div class="mood-box">
+      <p class="small-label">How are you feeling?</p>
+      <div id="moodSelector" class="mood-row">
+        <button type="button" data-mood="😊">😊</button>
+        <button type="button" data-mood="😐">😐</button>
+        <button type="button" data-mood="😔">😔</button>
+      </div>
+    </div>
+
+    <div class="progress-section">
+      <div id="dailySummary" class="summary-text">No habits yet.</div>
+      <div class="progress-bg">
+        <div id="progressbar" class="progress-fill"></div>
+      </div>
+    </div>
+    
+    <div id="habitList"></div>
+
+    <form id="habitForm" class="input-group">
+      <input id="habitInput" type="text" placeholder="Add a new habit" required />
+      <button class="add" type="submit">+</button>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Weekly Planning</h2>
+    <p class="text-muted">Set a focus for each day</p>
+    <div id="weeklyPlanner" class="weekly-grid"></div>
+  </div>
+</main>
+
+<section class="analytics-section">
+  <div class="card">
+    <h2>Monthly Analytics</h2>
+    <p class="text-muted">Habit frequency tracking (Total Days)</p>
+    <select id="monthSelect"></select>
+    <div id="analyticsBoard" class="graph-container"></div>
+  </div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
