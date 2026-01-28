@@ -1,5 +1,3 @@
-(function() {
-  'use strict';
 
   // vars :-
 
@@ -32,53 +30,54 @@
 
   function startApp() {
     topDate.textContent = new Date().toDateString();
-    fillMonthOptions();
-    refreshHabitList();
-    refreshWeeklyGrid();
-    updateMyChart();
-    checkMoodStatus();
-    attachEvents();
-    getNewQuote();
-    startNudgeAlert(); 
+    fillmonthoptions();
+    refreshhabitlist();
+    refreshweeklygrid();
+    updatemychart();
+    checkmood();
+    attachevents();
+    getnewquote();
+    startnudgealert(); 
   }
 
-  function syncData() {
+  function syncdata() {
     localStorage.setItem('lifetrack-habits', JSON.stringify(habitsData));
     localStorage.setItem('lifetrack-weekly-tasks', JSON.stringify(weeklyPlanData));
     localStorage.setItem('lifetrack-mood', userMood);
   }
 
-  // Quote API call
+  // Quote APIs
 
-  async function getNewQuote() {
-    try {
-      const response = await fetch('https://api.quotable.io/random?tags=inspirational');
-      const data = await response.json();
-      document.getElementById('quoteText').textContent = `"${data.content}"`;
-      document.getElementById('quoteAuthor').textContent = `— ${data.author}`;
-    } catch (err) {
-      document.getElementById('quoteText').textContent = "Consistency is the key to success.";
+async function getnewquote() {
+  try {
+    const response = await fetch('https://api.quotable.io/random?tags=inspirational');
+    if (!response.ok) {
+      throw new Error("Failed to fetch quote");
     }
+    const data = await response.json();
+    document.getElementById('quoteText').textContent = `"${data.content}"`;
+    document.getElementById('quoteAuthor').textContent = `— ${data.author}`;
+  } catch (err) {
+    document.getElementById('quoteText').textContent =
+      "Consistency is the key to success.";
+    document.getElementById('quoteAuthor').textContent = "";
   }
-
-  // Nudge notification timer
-
-  function startNudgeAlert() {
+}
+  // Nudge notification ko timer ke sath chalayenge
+   function startnudgealert() {
     clearTimeout(nudgeTimer);
     nudgeTimer = setTimeout(() => {
       const reminders = ["Hey! Drink some water 💧", "Time to stretch a bit! 🧘", "Don't forget your goals! ✨"];
       flashMessage(reminders[Math.floor(Math.random() * reminders.length)], false);
-      startNudgeAlert();
+      startnudgealert();
     }, NUDGE_INTERVAL);
   }
 
-  // Habit list render logic
 
-  function refreshHabitList() {
+  function refreshhabitlist() {
     myHabitList.innerHTML = '';
     const todayStr = new Date().toISOString().slice(0, 10);
     
-    // reset done status if day changed
     habitsData.forEach(item => { 
       if (item.lastCompleted !== todayStr) item.done = false; 
     });
@@ -107,9 +106,9 @@
     });
   }
 
-  // Weekly planner UI logic
+  // Weekly planner ka logic
 
-  function refreshWeeklyGrid() {
+  function refreshweeklygrid() {
     weekGrid.innerHTML = '';
     Object.keys(weeklyPlanData).forEach(day => {
       const card = document.createElement('div');
@@ -132,33 +131,30 @@
     });
   }
 
-  // Window functions for interaction
 
   window.handleWeeklyAdd = (day) => {
     const val = prompt("Task for " + day);
-    if (val) { weeklyPlanData[day].push({ text: val, done: false }); syncData(); refreshWeeklyGrid(); }
+    if (val) { weeklyPlanData[day].push({ text: val, done: false }); syncdata(); refreshweeklygrid(); }
   };
 
   window.handleWeeklyToggle = (day, idx) => {
     weeklyPlanData[day][idx].done = !weeklyPlanData[day][idx].done;
-    syncData(); refreshWeeklyGrid();
+    syncdata(); refreshweeklygrid();
   };
 
   window.handleWeeklyDelete = (day, idx) => {
     weeklyPlanData[day].splice(idx, 1);
-    syncData(); refreshWeeklyGrid();
+    syncdata(); refreshweeklygrid();
   };
 
   window.handleWeeklyEdit = (day, idx, txt) => {
     weeklyPlanData[day][idx].text = txt;
-    syncData();
+    syncdata();
   };
 
-  // Event listeners setup
-
-  function attachEvents() {
-    window.addEventListener('mousedown', startNudgeAlert);
-    window.addEventListener('keydown', startNudgeAlert);
+  function attachevents() {
+    window.addEventListener('mousedown', startnudgealert);
+    window.addEventListener('keydown', startnudgealert);
 
     myHabitForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -166,7 +162,7 @@
       if (!inputVal || habitsData.some(h => h.name.toLowerCase() === inputVal.toLowerCase())) return;
       habitsData.push({ id: Date.now(), name: inputVal, streak: 0, done: false, history: [] });
       habitInputField.value = '';
-      syncData(); refreshHabitList(); updateMyChart();
+      syncdata(); refreshhabitlist(); updatemychart();
     });
 
     myHabitList.addEventListener('click', (e) => {
@@ -178,7 +174,6 @@
       if (e.target.classList.contains('checkbox')) {
         targetHabit.done = !targetHabit.done;
         
-        // --- VERIFY DATA LOGIC ---
         if (targetHabit.done) {
           targetHabit.lastCompleted = today;
           if (!targetHabit.history) targetHabit.history = [];
@@ -191,13 +186,13 @@
           targetHabit.history = targetHabit.history.filter(d => d !== today);
           targetHabit.streak = Math.max(0, targetHabit.streak - 1);
         }
-        syncData(); refreshHabitList(); updateMyChart();
+        syncdata(); refreshhabitlist(); updatemychart();
       } 
       
       if (e.target.classList.contains('btn-del')) {
         recentlyRemoved = targetHabit;
         habitsData = habitsData.filter(x => x.id != habitId);
-        syncData(); refreshHabitList(); updateMyChart();
+        syncdata(); refreshhabitlist(); updatemychart();
         flashMessage("Habit removed", true);
       }
     });
@@ -206,26 +201,25 @@
       if (recentlyRemoved) {
         habitsData.push(recentlyRemoved);
         recentlyRemoved = null;
-        syncData(); refreshHabitList(); updateMyChart();
+        syncdata(); refreshhabitlist(); updatemychart();
         toastBox.classList.add('toast-hidden');
       }
     });
 
     moodBtns.addEventListener('click', (e) => {
       const button = e.target.closest('button');
-      if (button) { userMood = button.dataset.mood; syncData(); checkMoodStatus(); }
+      if (button) { userMood = button.dataset.mood; syncdata(); checkmood(); }
     });
-    monthPicker.addEventListener('change', updateMyChart);
+    monthPicker.addEventListener('change', updatemychart);
   }
 
-  // Analytics graph logic
+  // Analytics graph  ka logic
 
-  function updateMyChart() {
+  function updatemychart() {
     chartArea.innerHTML = '';
     const selectedMonth = monthPicker.value; // Format: YYYY-MM
     if (habitsData.length === 0) return;
 
-    // Calculate completions for selected month
     const habitCounts = habitsData.map(h => {
       const history = h.history || [];
       return history.filter(date => date.startsWith(selectedMonth)).length;
@@ -247,7 +241,7 @@
       
       chartArea.appendChild(barWrapper);
       
-      // trigger animation
+
       setTimeout(() => { 
         const actualBar = barWrapper.querySelector('.bar');
         if (actualBar) {
@@ -257,7 +251,7 @@
     });
   }
 
-  function fillMonthOptions() {
+  function fillmonthoptions() {
     const todayDate = new Date();
     for (let i = 0; i < 6; i++) {
       const d = new Date(todayDate.getFullYear(), todayDate.getMonth() - i, 1);
@@ -268,7 +262,7 @@
     }
   }
 
-  function checkMoodStatus() {
+  function checkmood() {
     Array.from(moodBtns.children).forEach(b => {
       b.style.background = b.dataset.mood === userMood ? '#ffe0cc' : 'white';
       b.style.borderColor = b.dataset.mood === userMood ? 'var(--primary)' : 'var(--border)';
@@ -284,4 +278,3 @@
   }
 
   startApp();
-})();
